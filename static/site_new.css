@@ -1,0 +1,212 @@
+body {
+  background-color:rgb(226, 226, 226);
+  margin:0;
+  padding:0;
+}
+
+
+.navbar {
+    background-color: rgb(250, 250, 250);
+    font-size: 1em;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: rgb(44, 156, 194);
+    margin-top: 0px;
+    padding: 10px 0px 5px 0px;
+    height: 25px;
+    width: 100%;
+    display: flex;
+    align-content: center;
+    box-shadow: 0px 0px 3px grey;
+}
+
+
+
+.navbar a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.navbar-brand {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-left: 35px;
+}
+
+
+.body-content {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.row {
+  margin-top: 10px;
+  height: 550px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+  /* Create three unequal columns that floats next to each other */
+.col {
+  float: left;
+  height: 100%;
+}
+
+.left {
+  width: 15%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.right {
+  width: 33%;
+  margin-top: 0px;
+  margin-left: 10px;
+}
+
+.mid {
+  background-color: rgb(250, 250, 250);
+  width: 50%;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  box-shadow: 0px 0px 3px gray;
+}
+
+.c {
+  background-color: lightslategray;
+  width: 5000px;
+  height: 5000px;
+}
+
+
+
+
+.btn1 {
+  background-color:rgb(110, 187, 218);
+  border: 1px solid rgb(44, 156, 194); /* Green border */
+  box-shadow: 0px 0px 0.5px rgb(44, 156, 194);
+  border-radius: 20px;
+  color: white; /* White text */
+  font-size: 1em;
+  text-align: center;
+  padding: 10px 10px; /* Some padding */
+  width: 60%; /* Set a width if needed */
+  cursor: pointer;
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn1:hover {
+  background-color: rgb(44, 156, 194);
+  box-shadow: 0px 0px 3px rgb(44, 156, 194);
+}
+
+
+.btn111 {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  padding: 10px 10px; /* Some padding */
+  /* Style as you please, it will become the visible UI component. */
+  background-color:rgb(110, 187, 218);
+  border: 1px solid rgb(44, 156, 194); /* Green border */
+  box-shadow: 0px 0px 0.5px rgb(44, 156, 194);
+  border-radius: 20px;
+  color: white; /* White text */
+  font-size: 1em;
+  text-align: center;
+}
+
+.btn111:hover {
+  background-color: rgb(44, 156, 194);
+  box-shadow: 0px 0px 3px rgb(44, 156, 194);
+}
+
+
+
+
+
+.dropdown-check-list {
+  display: inline-block;
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+  padding: 10px 10px; 
+  background-color: rgb(110, 187, 218);
+  border: 1px solid rgb(44, 156, 194); /* Green border */
+  box-shadow: 0px 0px 0.5px rgb(44, 156, 194);
+  border-radius: 20px;
+  color: white; /* White text */
+  font-size: 1em;
+  text-align: center;
+
+}
+
+.dropdown-check-list:hover {
+  background-color: rgb(44, 156, 194);
+  box-shadow: 0px 0px 3px rgb(44, 156, 194);
+}
+
+.dropdown-check-list .anchor {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  width: 100%;
+  padding: 0px;
+}
+
+.dropdown-check-list ul.items {
+  width:100%;
+  padding: 5px 0px;
+  display: none;
+  margin: 0;
+  font-size: 0.7em;
+}
+
+.dropdown-check-list ul.items li {
+  list-style: none;
+}
+
+
+.imginfo {
+  height: 150px;
+  width: 100%;
+  border: 2px solid rgb(250, 250, 250);
+  border-radius: 7px;
+  box-shadow: 0px 0px 3px grey;
+  background-color:rgb(250, 250, 250);
+}
+
+.objinfo {
+  margin-top: 10px;
+  height: 380px;
+  width: 100%; 
+  border: 2px solid rgb(250, 250, 250);
+  border-radius: 7px;
+  box-shadow: 0px 0px 3px grey;
+  background-color: rgb(250, 250, 250);
+}
+
+
+.notify{
+  text-align: center;
+  margin-top: 15px;
+}
+
+
+.title {
+  margin-left: 5px;
+  margin-top: 5px;
+
+}
+
+.main {
+  margin-left: 5px;
+}
