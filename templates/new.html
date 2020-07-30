@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>new</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='site_new.css')}}" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.2.0/fabric.min.js"></script>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <a href="{{ url_for('home') }}" class="navbar-brand" >DeepFrozen </a> 
+        </div>
+
+        <div class="body-content">
+          <div class="row">
+             
+
+            <div class="col left">
+              <div class=btn111 id="fileup" type="file">
+                <b>Upload Slide</b>
+              </div>
+              <input type="file" id="upload-photo" style="display:none" />
+              
+              <div id="list1" class="dropdown-check-list" >
+                <span class="anchor"><b>Choose Model</b></span>
+                <ul id="items" class="items">
+                    <li><input type="checkbox" id="normalGlom"/>Normal glom </li>
+                    <li><input type="checkbox" id="sclGlom"/>Sclerotic glom</li>
+                </ul>
+              </div>
+
+              <div class=btn1 id="submit">
+                <b>Predict</b>
+              </div>
+
+
+              <div class="notify">
+                <span id="test1"></span>
+              </div>
+
+            </div>
+          
+
+            <div class="col mid">
+              <canvas id="c" width="5000" height="5000"></canvas>
+            </div>
+          
+
+            <div class="col right">
+              <div class="imginfo">
+                <div class="title">
+                  <b>Slide info</b>
+                </div>
+                <div class="main" id="jsonData0">
+                  <div>
+                  <span id="test"></span>
+                  </div>
+                  <div>
+                  <br>
+                  <span id="norm"></span><br>
+                  <span id="scl"></span><br>
+                  </div>
+                </div>
+              </div>
+              <div class="objinfo">
+                <div class="title">
+                  <b>Object info</b>
+                </div>
+                <div class="main" id="jsonData">
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+    </body>
+</html>
+
+
+<script>
+
+
+var canvas = new fabric.Canvas('c');
+  // add slide
+  document.getElementById('upload-photo').addEventListener("change", function (e) {
+  // clear exist objects??
+  canvas.remove(...canvas.getObjects());
+  document.getElementById("jsonData").innerHTML = "";
+  //document.getElementById("jsonData0").innerHTML = "";
+  // read input file
+  var file = e.target.files[0];
+  $("#test").text(file.name);
+  var reader = new FileReader();
+  reader.onload = function (f) {
+    var data = f.target.result;
+    fabric.Image.fromURL(data, function (img) {
+      canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+
+
+  // button drop
+  var checkList = document.getElementById('list1');
+  var items = document.getElementById('items');
+        checkList.getElementsByClassName('anchor')[0].onclick = function (evt) {
+            if (items.classList.contains('visible')){
+                items.classList.remove('visible');
+                items.style.display = "none";
+                
+  // clear exist objects??
+  canvas.remove(...canvas.getObjects());
+
+// read objects from json
+var img_url = $("#test").text().split('.')[0].split('_')[1];
+
+$.getJSON({
+  url: "/static/"+img_url+".json",
+  success: function (result, status, xhr) {
+    for (var key in result){
+
+      var glom = result[key];
+      var c;
+      if($(glom.cat).is(":checked")){
+        if(glom.cat=="#sclGlom"){
+          c = 'white';
+        }
+        else{
+          c = 'yellow';
+        }
+        var rect = new fabric.Polygon(glom.coord,{
+          left: glom.left,
+          top: glom.top,
+          angle: 0,
+          fill: 'transparent',
+          centeredScaling:true,
+          stroke: c,
+          strokeWidth: 4,
+          selectable: true,
+          hasControls: false,
+          hasBorders: true,
+          cat: glom.cat,
+          area: glom.area,
+          // self define
+          Elongation: glom.Elongation,
+          MajorAxisLength: glom.MajorAxisLength,
+          MaximumDiameter: glom.MaximumDiameter,
+          MeshSurface: glom.MeshSurface,
+          MinorAxisLength: glom.MinorAxisLength,
+          Perimeter: glom.Perimeter,
+          PerimeterSurfaceRatio: glom.PerimeterSurfaceRatio,
+          Sphericity: glom.Sphericity
+
+        }); 
+
+        rect.on('selected', function() {
+          //this.strokeWidth=10;
+          var dd = document.createElement("div");
+          // add type
+          var par = document.createElement("H4"); //creating the paragraph element 
+          var text = document.createTextNode("Type: "+this.get("cat")); //creating the text node
+          par.appendChild(text); //appending the t
+          dd.appendChild(par);
+          // add shape features
+          var par = document.createElement("H4"); //creating the paragraph element 
+          var text = document.createTextNode("Shape2D: "); //creating the text node
+          par.appendChild(text); //appending the t
+          dd.appendChild(par);
+          var text = document.createTextNode("  Elongation: "+this.get("Elongation")); //creating the text node
+          dd.appendChild(text);
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MajorAxisLength: "+this.get("MajorAxisLength")); //creating the text node
+          dd.appendChild(text);
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MaximumDiameter: "+this.get("MaximumDiameter")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MeshSurface: "+this.get("MeshSurface")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MinorAxisLength: "+this.get("MinorAxisLength")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b); 
+          var text = document.createTextNode("  Perimeter: "+this.get("Perimeter")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  PerimeterSurfaceRatio: "+this.get("PerimeterSurfaceRatio")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b); 
+          var text = document.createTextNode("  Sphericity: "+this.get("Sphericity")); //creating the text node
+          dd.appendChild(text); //appending the t
+          
+          $("#jsonData").html(dd);
+        });
+
+        canvas.add(rect);
+
+      }
+
+      canvas.renderAll();
+    }
+  }
+});
+
+            }
+            
+            else{
+                items.classList.add('visible');
+                items.style.display = "block";
+
+            }  
+        }
+
+  // input file upload
+  $('#fileup').click(function() {
+     $('#upload-photo').trigger("click");
+  });
+
+  // submit checked attributes
+  $('#submit').click(function() {
+    $('#test1').text("Start predict ...");
+    var dat = {"name": $("#test").text(),
+               "normal": $('#normalGlom').is(':checked'), 
+               "scl": $('#sclGlom').is(':checked')};
+    $.ajax({
+      type: 'POST',
+      url: "{{ url_for('home') }}",
+      data: JSON.stringify(dat),
+      contentType: 'application/json;charset=UTF-8',
+      success: function(data) {
+
+        $('#test1').text("Done!");
+
+        setTimeout(function(){
+         document.getElementById("test1").innerHTML="";
+         },500);
+
+  // clear exist objects??
+  canvas.remove(...canvas.getObjects());
+
+// read objects from json
+var img_url = $("#test").text().split('.')[0].split('_')[1];
+
+$.getJSON({
+  url: "/static/"+img_url+".json",
+  success: function (result, status, xhr) {
+    var cntscl = 0;
+    var cntnorm = 0;
+    var c;
+    for (var key in result){
+
+      var glom = result[key];
+    
+      if($(glom.cat).is(":checked")){
+        if(glom.cat=="#sclGlom"){
+          c = 'white';
+          cntscl ++;
+        }
+        else{
+          c = 'yellow';
+          cntnorm ++;
+        }
+        var rect = new fabric.Polygon(glom.coord,{
+          left: glom.left,
+          top: glom.top,
+          angle: 0,
+          fill: 'transparent',
+          centeredScaling:true,
+          stroke: c,
+          strokeWidth: 4,
+          selectable: true,
+          hasControls: false,
+          hasBorders: true,
+          cat: glom.cat,
+          area: glom.area,
+          // self define
+          Elongation: glom.Elongation,
+          MajorAxisLength: glom.MajorAxisLength,
+          MaximumDiameter: glom.MaximumDiameter,
+          MeshSurface: glom.MeshSurface,
+          MinorAxisLength: glom.MinorAxisLength,
+          Perimeter: glom.Perimeter,
+          PerimeterSurfaceRatio: glom.PerimeterSurfaceRatio,
+          Sphericity: glom.Sphericity
+        }); 
+
+        rect.on('selected', function() {
+          var dd = document.createElement("div");
+          // add type
+          var par = document.createElement("H4"); //creating the paragraph element 
+          var text = document.createTextNode("Type: "+this.get("cat")); //creating the text node
+          par.appendChild(text); //appending the t
+          dd.appendChild(par);
+          // add shape features
+          var par = document.createElement("H4"); //creating the paragraph element 
+          var text = document.createTextNode("Shape2D: "); //creating the text node
+          par.appendChild(text); //appending the t
+          dd.appendChild(par);
+          var text = document.createTextNode("  Elongation: "+this.get("Elongation")); //creating the text node
+          dd.appendChild(text);
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MajorAxisLength: "+this.get("MajorAxisLength")); //creating the text node
+          dd.appendChild(text);
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MaximumDiameter: "+this.get("MaximumDiameter")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MeshSurface: "+this.get("MeshSurface")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  MinorAxisLength: "+this.get("MinorAxisLength")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b); 
+          var text = document.createTextNode("  Perimeter: "+this.get("Perimeter")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b);
+          var text = document.createTextNode("  PerimeterSurfaceRatio: "+this.get("PerimeterSurfaceRatio")); //creating the text node
+          dd.appendChild(text); //appending the t
+          var b = document.createElement("br"); //creating the paragraph element 
+          dd.appendChild(b); 
+          var text = document.createTextNode("  Sphericity: "+this.get("Sphericity")); //creating the text node
+          dd.appendChild(text); //appending the t
+          
+          $("#jsonData").html(dd);
+          
+        });
+
+        canvas.add(rect);
+      }
+      canvas.renderAll();
+    }
+
+    $("#scl").text("#sclGlom : "+ cntscl);
+    $("#norm").text("#normalGlom : "+ cntnorm);
+
+
+  }
+});
+
+
+
+      }
+   });
+  });
+
+</script>
+
+
+
+<!--
+
+
+-->
+
+
+
