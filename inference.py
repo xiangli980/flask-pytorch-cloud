@@ -1,12 +1,50 @@
 from makedata import *
 from makemodel import *
-from feature import get_feature
+#from feature import get_feature
+import radiomics
+from radiomics import featureextractor
+
 import six
 import skimage.io as skio
 from skimage.color import rgb2gray
 from scipy import ndimage
 import urllib
 from loadweights import *
+
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+import os
+import skimage.io as skio
+from skimage import measure
+from skimage.draw import polygon
+from skimage.color import rgb2gray
+import pandas as pd
+
+def init_extractor():
+    # First define the settings
+    settings = {}
+    settings['force2D'] = True
+    settings['binWidth'] = 1
+    # Instantiate the extractor
+    extractor = featureextractor.RadiomicsFeatureExtractor(**settings)  # ** 'unpacks' the dictionary in the function call
+
+    # enable 2D shape
+    extractor.enableFeatureClassByName('shape',False)
+    extractor.enableFeatureClassByName('shape2D')
+
+    #extractor.enableImageTypeByName('Wavelet')
+    print('Enabled features:\n\t', extractor.enabledFeatures)  # Still the default parameters
+    return extractor
+
+# shape feature
+def get_feature(imagePath,maskPath,extractor):
+    f = {}
+    result = extractor.execute(imagePath, maskPath,label=255)
+    for key, val in six.iteritems(result):
+        if "shape2D" in key:
+            f[key] = val
+    return f
 
 
 def creat_model():
