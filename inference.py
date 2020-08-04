@@ -66,6 +66,7 @@ def test_sample(model):
 from skimage.measure import label, regionprops, find_contours
 import json
 def get_json(fileid):
+    extractor = init_extractor()
     js = {}
     im = skio.imread("./log/{}".format(fileid))[:,:,0]
     img = skio.imread("./static/{}".format(fileid))
@@ -99,7 +100,7 @@ def get_json(fileid):
         skio.imsave(imageurl, slide)
         
         # fetch and extract features
-        features = get_feature(imageurl, maskurl)
+        features = get_feature(imageurl, maskurl, extractor)
         for key, val in six.iteritems(features):
             keyy = key.split('_')[2]
             if(not isinstance(val, np.ndarray)):
