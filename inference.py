@@ -1,6 +1,6 @@
 from makedata import *
 from makemodel import *
-#from feature import get_feature
+from feature import get_feature
 import six
 import skimage.io as skio
 from skimage.color import rgb2gray
@@ -20,10 +20,10 @@ def creat_model():
     print("weight download")
     model = GlomNet(isTrain, isContinue, savedir, loadpath, "UNet")
     return model
-
+"""
 def test_sample(model):
-
-    input_img = skio.imread("./input.png") 
+    # whole slide
+    input_img = skio.imread("./static/input.png") 
     img_transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.ToTensor()
@@ -40,17 +40,39 @@ def test_sample(model):
     #skio.imsave("./static/output.png", result[:,:,None].repeat(3,axis=2))
 
     return result
-
 """
+def test_sample(model):
+    # whole slide
+    input_img = skio.imread("./static/input.png") 
+    img_transform = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.ToTensor()
+            ])
+
+    # image slices:
+    img = img_transform(input_img)
+
+    model.set_input(img.unsqueeze(0),img)
+    model.test()
+    pred = model.get_pred()
+    pred = pred.detach().squeeze().cpu().numpy()
+    pred = np.moveaxis(pred,0,-1) 
+    result = np.argmax(pred,axis=2)
+    result = (ndimage.binary_fill_holes(result).astype(int))*255
+    #skio.imsave("./static/output.png", result[:,:,None].repeat(3,axis=2))
+
+    return result
+
 from skimage.measure import label, regionprops, find_contours
 import json
 def get_json(fileid):
     js = {}
-    im = skio.imread("./static/masks/mask_{}.png".format(fileid))
-    img = skio.imread("./static/slides/slide_{}.png".format(fileid))
-    if not os.path.exists('./static/feature_masks/{}'.format(fileid)):
-        os.makedirs('./static/feature_masks/{}'.format(fileid))
-        os.makedirs('./static/feature_slides/{}'.format(fileid))
+    im = skio.imread("./log/{}".format(fileid))[:,:,0]
+    img = skio.imread("./static/{}".format(fileid))
+    filepth = fileid.split('.')[0]
+    if not os.path.exists('./log/feature_masks/{}'.format(filepth)):
+        os.makedirs('./log/feature_masks/{}'.format(filepth))
+        os.makedirs('./log/feature_slides/{}'.format(filepth))
 
     # initial gloms, get attributes
     lb = label(im[:,:])
@@ -70,10 +92,12 @@ def get_json(fileid):
         mask = im[top:down+1,left:right+1]
         slide = img[top:down+1,left:right+1]
         slide = rgb2gray(slide)
-        maskurl = "./static/feature_masks/{}/mask_{}.png".format(fileid,i)
-        imageurl = "./static/feature_slides/{}/slide_{}.png".format(fileid,i)
+        # create url for this glom to extract feature from
+        maskurl = "./log/feature_masks/{}/mask_{}.png".format(filepth,i)
+        imageurl = "./log/feature_slides/{}/slide_{}.png".format(filepth,i)
         skio.imsave(maskurl, mask)
         skio.imsave(imageurl, slide)
+        
         # fetch and extract features
         features = get_feature(imageurl, maskurl)
         for key, val in six.iteritems(features):
@@ -83,7 +107,7 @@ def get_json(fileid):
             else:
                 js[str(i)][keyy] = val.tolist()
 
-    
+    # add contours
     coords = find_contours(im[:,:],0.6)
     for i, coord in enumerate(coords):
         jos = []
@@ -105,4 +129,3 @@ if __name__ == "__main__":
     with open('./hello_app/static/glomglom.json', 'w') as fp:
         json.dump(regs, fp)
 
-"""

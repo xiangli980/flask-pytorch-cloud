@@ -120,7 +120,7 @@ var canvas = new fabric.Canvas('c');
   canvas.remove(...canvas.getObjects());
 
 // read objects from json
-var img_url = $("#test").text().split('.')[0].split('_')[1];
+var img_url = $("#test").text().split('.')[0];
 
 $.getJSON({
   url: "/static/"+img_url+".json",

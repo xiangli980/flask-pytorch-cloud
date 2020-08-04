@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask import render_template
 from datetime import datetime
-from inference import test_sample,creat_model
+from inference import *
 from math import sqrt
 from time import sleep
 import json
@@ -15,15 +15,19 @@ def home():
     if request.method == "POST":
         path = request.json["name"]
         print(path)
-        #fileid = path.split(".")[0].split("_")[1]
+        fileid = path.split(".")[0]
         model = creat_model()
         msk = test_sample(model)
         print(msk.shape)
-        #regs = get_json(fileid)
-        #with open('./static/{}.json'.format(fileid), 'w') as fp:
-        #   json.dump(regs, fp)
-        cv2.imwrite("./output.png", msk[:,:,None].repeat(3,axis=2))
-        return {"msk":msk.tolist()}
+        # save mask
+        cv2.imwrite("./log/{}".format(path), msk[:,:,None].repeat(3,axis=2))
+        # get contours and features for this slide
+        regs = get_json(path)
+        # save json
+        with open('./static/{}.json'.format(fileid), 'w') as fp:
+           json.dump(regs, fp)
+        
+        return {"msk":"done"}
         
     return render_template("new.html")
 
@@ -35,4 +39,4 @@ if __name__ == '__main__':
     # the "static" directory. See:
     # http://flask.pocoo.org/docs/1.0/quickstart/#static-files. Once deployed,
     # App Engine itself will serve those files as configured in app.yaml.
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=8080, debug=True)
