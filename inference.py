@@ -81,13 +81,15 @@ def test_sample(model):
 """
 def test_sample(model):
     # whole slide
-    input_img = skio.imread("./static/input.png") 
+    input_img = skio.imread("./static/input1.png") 
     img_transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.ToTensor()
             ])
 
     # image slices:
+    
+
     img = img_transform(input_img)
 
     model.set_input(img.unsqueeze(0),img)
