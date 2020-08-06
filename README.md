@@ -23,8 +23,10 @@ pyradiomics - pathomic features<br>
 `pip install -r requirements.txt`
 
 # Run flask app on local computer
-`cd flask-pytorch-cloud    
-conda activate [name of enviroment]    
+`cd flask-pytorch-cloud   
+
+conda activate [name of enviroment]     
+
 python app.py  `<br>
 Then open the url and upload the sample image `im0.png` to test the model.
 
